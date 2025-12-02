@@ -61,26 +61,4 @@ $transaction = Transactions::all();       // fetch all records
 
     <!-- include SweetAlert2 and confirm-delete script -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('click', function (e) {
-            const btn = e.target.closest && e.target.closest('.delete-btn');
-            if (!btn) return;
-            e.preventDefault();
-            const href = btn.getAttribute('data-href') || btn.getAttribute('href');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'This will permanently delete the transaction.',
-                icon: 'warning',
-                showCancelButton: true,
-                cancelButtonText: 'Cancel',
-                confirmButtonText: 'Yes, delete it',
-                reverseButtons: true,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // navigate to backend destroy (GET)
-                    window.location.href = href;
-                }
-            });
-        });
-    </script>
     <?php include '../layout/footer.php'; ?>

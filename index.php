@@ -55,6 +55,26 @@ if ($daily_deposit > 0) {
     $daily_percent = $daily_expense > 0 ? -100 : 0;
 }
 
+// --- add: weekly totals (last 7 days, inclusive) ---
+$week_start = date('Y-m-d', strtotime('-6 days')); // 7-day window: today and previous 6 days
+$weekly_deposits = 0.0;
+$weekly_expenses = 0.0;
+
+foreach ($transactions as $t) {
+    $amt = (float) ($t->amount ?? 0);
+    $cat = strtolower($t->category ?? '');
+    $created = isset($t->date_created) && strtotime($t->date_created) !== false
+        ? date('Y-m-d', strtotime($t->date_created))
+        : null;
+
+    if ($created !== null && $created >= $week_start && $created <= $today) {
+        if ($cat === 'deposit')
+            $weekly_deposits += $amt;
+        else
+            $weekly_expenses += $amt;
+    }
+}
+
 function format_currency($n)
 {
     return '₱' . number_format((float) $n, 2);
@@ -197,6 +217,18 @@ $chart_cat_values = json_encode([$total_deposits, $total_expenses], JSON_NUMERIC
         </div>
     </div>
 
+    <!-- Weekly totals row (single compact card) -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="p-3 bg-light rounded">
+                <strong>Weekly Funds Report</strong>
+                <div class="mt-2">Deposit: <span class="h5 mt-1 text-success"><?= htmlspecialchars(format_currency($weekly_deposits)) ?></span></div>
+                <div class="mt-1">Expense: <span class="h5 mt-1 text-danger"><?= htmlspecialchars(format_currency($weekly_expenses)) ?></span></div>
+                <small class="text-muted d-block mt-2">Since <?= htmlspecialchars(date('M j', strtotime($week_start))) ?></small>
+            </div>
+        </div>
+    </div>
+
     <!-- insert canvases above transactions table -->
     <div class="row mb-4">
         <div class="col-md-8">
@@ -230,9 +262,9 @@ $chart_cat_values = json_encode([$total_deposits, $total_expenses], JSON_NUMERIC
                 <?php if (!empty($transactions)): ?>
                     <?php foreach ($transactions as $row): ?>
                         <?php
-                            // show negative sign if expense
-                            $sign = (strtolower($row->category ?? '') === 'expense') ? '-' : '';
-                            $amountFormatted = number_format((float)($row->amount ?? 0), 2);
+                        // show negative sign if expense
+                        $sign = (strtolower($row->category ?? '') === 'expense') ? '-' : '';
+                        $amountFormatted = number_format((float) ($row->amount ?? 0), 2);
                         ?>
                         <tr>
                             <td><?= htmlspecialchars($row->id) ?></td>
@@ -297,10 +329,10 @@ $chart_cat_values = json_encode([$total_deposits, $total_expenses], JSON_NUMERIC
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 const label = context.dataset.label || '';
                                 const val = context.parsed.y;
-                                return label + ': ₱' + val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+                                return label + ': ₱' + val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             }
                         }
                     }
@@ -326,12 +358,12 @@ $chart_cat_values = json_encode([$total_deposits, $total_expenses], JSON_NUMERIC
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 const label = context.label || '';
                                 const val = context.parsed || 0;
-                                const total = context.chart._metasets[context.datasetIndex].total || categoryChart.data.datasets[0].data.reduce((s,v) => s+v,0);
+                                const total = context.chart._metasets[context.datasetIndex].total || categoryChart.data.datasets[0].data.reduce((s, v) => s + v, 0);
                                 const pct = total ? (val / total * 100).toFixed(2) : '0.00';
-                                return label + ': ₱' + Number(val).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) + ' (' + pct + '%)';
+                                return label + ': ₱' + Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' (' + pct + '%)';
                             }
                         }
                     }
@@ -365,7 +397,7 @@ $chart_cat_values = json_encode([$total_deposits, $total_expenses], JSON_NUMERIC
                 const val = values[i] || 0;
                 const pct = (val / total) * 100;
                 const color = bgColors[i] || colors[i % colors.length];
-                html += `<li class="mb-1"><span style="display:inline-block;width:12px;height:12px;background:${color};margin-right:8px;border-radius:2px;"></span><strong>${labelsArr[i]}</strong>: ₱${val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} — ${pct.toFixed(2)}%</li>`;
+                html += `<li class="mb-1"><span style="display:inline-block;width:12px;height:12px;background:${color};margin-right:8px;border-radius:2px;"></span><strong>${labelsArr[i]}</strong>: ₱${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} — ${pct.toFixed(2)}%</li>`;
             }
             html += '</ul>';
             listEl.innerHTML = html;

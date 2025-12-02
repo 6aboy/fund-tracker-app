@@ -1,9 +1,9 @@
 <?php
 class Database{
     private $host = "127.0.0.1";
-    private $port = "3307";
+    private $port = "3306";
     private $username = "root";
-    private $password = "strongestnumber2";
+    private $password = "";
     private $database = "fund_tracker";
     private $conn;
 
