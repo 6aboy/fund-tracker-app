@@ -10,6 +10,11 @@ class Database
 
     public function __construct()
     {
+        $local = is_file(__DIR__ . '/local.php') ? require __DIR__ . '/local.php' : [];
+        foreach (['host', 'port', 'username', 'password', 'database'] as $key) {
+            $env = getenv('DB_' . strtoupper($key));
+            $this->$key = $env !== false ? $env : ($local[$key] ?? $this->$key);
+        }
         try {
             $db = "mysql:host={$this->host};port={$this->port};dbname={$this->database};charset=utf8mb4";
             $options = [

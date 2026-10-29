@@ -17,3 +17,22 @@ __pycache__/
 .DS_Store
 Thumbs.db
 /database/local.php
+
+# Private database configuration and database dumps
+*.sql
+!database/schema.sql
+*.dump
+*.bak
+*.sqlite-*
+/database/backups/
+/backups/
+/exports/
+
+# Credentials, private keys, and runtime session data
+/auth.json
+*.pem
+*.key
+*.p12
+*.pfx
+/sessions/
+/storage/sessions/

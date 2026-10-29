@@ -8,7 +8,7 @@ with authenticated access, charts, and Excel/PDF transaction exports.
 1. Install PHP 8+ with PDO MySQL and MySQL/MariaDB (XAMPP works).
 2. Place the project in `htdocs/fund_tracker` to match the app's URL paths.
 3. Create a `fund_tracker` database and import `database/schema.sql`.
-4. Set the connection details in `database/Database.php` (local default: port 3307).
+4. Copy `database/local.example.php` to `database/local.php` and set your database credentials there (local default: port 3307). The local file is ignored by Git. Environment variables `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_DATABASE` override these settings.
 5. Run `php database/seed_users.php` and optionally `php database/seed_demo.php`.
 6. Start Apache/MySQL and open `http://localhost/fund_tracker/login.php`.
 
