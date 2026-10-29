@@ -1,27 +1,15 @@
 <?php
-require_once __DIR__ . '/../database/database.php';
+require_once __DIR__ . '/../auth/session.php';
+require_auth();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); header('Allow: POST'); exit; }
+verify_csrf();
+require_once __DIR__ . '/../database/Database.php';
 require_once __DIR__ . '/../models/Transactions.php';
-
-// initialize DB + model connection
-$db = new Database();
-$conn = $db->getConnection();
-Transactions::setConnection($conn);
-
-// NOTE: you requested GET-based deletion. This is implemented below.
-// Validate id from GET and perform delete, then redirect back to index.php.
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-if ($id === false || $id === null) {
-    header('Location: index.php');
-    exit;
+Transactions::setConnection((new Database())->getConnection());
+$id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+if ($id && $id > 0) {
+    $transaction = Transactions::find($id);
+    if ($transaction) $transaction->delete();
 }
-
-$transaction = Transactions::find($id);
-if ($transaction) {
-    // call model's delete method (should return boolean)
-    $transaction->delete();
-}
-
-// always redirect back (no UI feedback)
-header('Location: ../index.php');
+header('Location: index.php');
 exit;
-?>

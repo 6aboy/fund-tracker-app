@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth/session.php';
+require_auth();
+
 require_once __DIR__ . '/../database/database.php';
 require_once __DIR__ . '/../models/Transactions.php';
 
@@ -13,6 +16,7 @@ Transactions::setConnection($conn);
 // Handle POST first so we can redirect (prevents "headers already sent")
 // Handle POST first so we can redirect (prevents "headers already sent")
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verify_csrf();
 
     // Basic sanitization/validation
     $name = trim($_POST['name'] ?? '');
@@ -23,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $validCategory = in_array($category, ['deposit', 'expense'], true);
 
     // If invalid input
-    if ($name === '' || $amount === false || !$validCategory) {
+    if ($name === '' || $amount === false || !is_finite($amount) || $amount <= 0 || !$validCategory) {
         $_SESSION['alert'] = [
             'type' => 'error',
             'message' => 'Invalid input. Please check your fields.'

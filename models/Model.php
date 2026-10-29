@@ -77,7 +77,6 @@
                 foreach($data as $key => $value){ 
                     $stmt->bindValue(":$key", $value); 
                 }
-                $stmt->execute(); 
                 $stmt->bindValue(':id', $id); 
                 $stmt->execute();
     

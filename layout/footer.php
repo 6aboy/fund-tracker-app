@@ -5,8 +5,8 @@ if (!empty($_SESSION['alert'])):
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
-            icon: '<?php echo $_SESSION['alert']['type']; ?>',
-            title: '<?php echo $_SESSION['alert']['message']; ?>',
+            icon: <?= json_encode($_SESSION['alert']['type'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            title: <?= json_encode($_SESSION['alert']['message'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
             showConfirmButton: false,
             timer: 2000
         });
@@ -14,15 +14,7 @@ if (!empty($_SESSION['alert'])):
         //Alert for submit
     </script>
 
-    <script>
 
-        document.addEventListener('DOMContentLoaded', function){
-            document.querySelector('transactionForm').onsubmit = function{
-                alert('Successfully Created a Transaction');
-            }
-        }
-
-    </script>
 
     <?php
     unset($_SESSION['alert']);
